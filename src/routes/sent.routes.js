@@ -34,5 +34,41 @@ router.post('/', async(req, res)=>{
     }
 } )
 
+//metodo get por id usando findbyId para poder ver  un envio en especifico
+router.get('/:id', async (req, res) => {
+    const sent = await Sent.findById(req.params.id);
+    res.json(sent);
+  });
+
+//metodo update usando put() pero usando el id
+router.put('/:id', async (req, res)=>{
+    try{    
+        const {title, description}=req.body;
+        const newSent= {title, description};
+        await Sent.findByIdAndUpdate(req.params.id, newSent);
+        res.json({status:'Sent Updated'});
+    }catch(err){
+        console.error(err);
+        res.status(404).send(err);
+        console.log("este es el error"+err);
+    }
+    })
+
+    //metodo find para poder filtrar por una query en este caso la query seria para poder filtrar por estado
+    //del envio
+    router.get('/', async (req, res) => {
+        try {
+          const { estadodelenvio } = req.query;
+          const query = estadodelenvio ? { estadodelenvio } : {}; // Objeto de filtro basado en el parámetro de consulta "estadodelenvio"
+          const sents = await Sent.find(query);
+         
+          res.json(sents);
+        } catch (err) {
+          console.error(err);
+          res.status(500).send(err);
+        }
+      });
+      
+
 
 module.exports=router;
